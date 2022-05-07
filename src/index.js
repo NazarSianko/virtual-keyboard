@@ -73,18 +73,19 @@ const Layout = [
     ['ControlRight', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
   ],
 ];
-let lang = 'rus';
+let lang = 'eng';
 let caps = false;
 const container = document.createElement('div');
 const textArea = document.createElement('textarea');
 const keyboard = document.createElement('div');
-textArea.id = 'textArea';
-keyboard.className = 'keyboard';
-container.className = 'container';
+textArea.classList.add('textArea');
+keyboard.classList.add('keyboard');
+container.classList.add('container');
 
 
 container.append(textArea);
 container.append(keyboard);
+document.body.append(container);
 for (let i = 0; i < Layout.length; i++) {
   const row = document.createElement('div');
   row.classList.add('row');
@@ -95,12 +96,12 @@ for (let i = 0; i < Layout.length; i++) {
 
     key.insertAdjacentHTML(
       'afterBegin',
-      `<div class='rus'>
-            <span class='caseDown '>${Layout[i][j][1]}</span>
+      `<div class='rus hidden'>
+            <span class='caseDown hidden '>${Layout[i][j][1]}</span>
             <span class='caseUp hidden'>${Layout[i][j][2]}</span>
           </div>
-          <div class='eng hidden'>
-            <span class='caseDown hidden'>${Layout[i][j][3]}</span>
+          <div class='eng '>
+            <span class='caseDown '>${Layout[i][j][3]}</span>
             <span class='caseUp hidden'>${Layout[i][j][4]}</span>
           </div>`,
     );
@@ -115,4 +116,36 @@ function active(elem) {
 function removeActive(elem) {
   elem.classList.remove('active');
 }
+
+
+
+
+function upperCase() {
+  const keyboardKeys = keyboard.querySelectorAll(`div > .${lang}`);
+  for (let i = 0; i < keyboardKeys.length; i++) {
+    keyboardKeys[i].querySelectorAll('span')[0].classList.toggle('hidden');
+    keyboardKeys[i].querySelectorAll('span')[1].classList.toggle('hidden');
+  }
+};
+ function switchLanguage()  {
+  const firstLang = keyboard.querySelectorAll(`div > .${lang}`);
+
+  for (let i = 0; i < firstLang.length; i++) {
+    firstLang[i].classList.toggle('hidden');
+    firstLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
+  }
+  if (lang === 'rus') {
+    lang = 'eng';
+    localStorage.setItem('lang', lang);
+  } else {
+    lang = 'rus';
+    localStorage.setItem('lang', lang);
+  }
+  const secondLang = keyboard.querySelectorAll(`div > .${lang}`);
+  for (let i = 0; i < secondLang.length; i += 1) {
+    secondLang[i].classList.toggle('hidden');
+    secondLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
+  }
+};
+
 
