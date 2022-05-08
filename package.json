@@ -8,6 +8,7 @@
     "lint:fix": "eslint ./src --fix"
   },
   "keywords": [],
+  "browser": "true",
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -21,3 +22,4 @@
     "eslint-plugin-import": "^2.26.0"
   }
 }
+

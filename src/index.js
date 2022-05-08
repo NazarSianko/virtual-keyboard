@@ -1,5 +1,5 @@
 const Layout = [
-  [['Backquote', 'ё', 'Ё', '`', '~'],
+  [['Tilda', 'ё', 'Ё', '`', '~'],
     ['Digit1', '1', '!', '1', '!'],
     ['Digit2', '2', '\'', '2', '@'],
     ['Digit3', '3', '№', '3', '#'],
@@ -63,7 +63,6 @@ const Layout = [
   ],
   [
     ['ControlLeft', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
-    ['MetaLeft', 'Win', 'Win', 'Win', 'Win'],
     ['AltLeft', 'Alt', 'Alt', 'Alt', 'Alt'],
     ['Space', ' ', ' ', ' ', ' '],
     ['AltRight', 'Alt', 'Alt', 'Alt', 'Alt'],
@@ -82,11 +81,17 @@ textArea.classList.add('textArea');
 keyboard.classList.add('keyboard');
 container.classList.add('container');
 
-
 container.append(textArea);
 container.append(keyboard);
 document.body.append(container);
-for (let i = 0; i < Layout.length; i++) {
+function active(elem) {
+  elem.classList.add('active');
+}
+function removeActive(elem) {
+  elem.classList.remove('active');
+}
+textArea.focus();
+for (let i = 0; i < Layout.length; i += 1) {
   const row = document.createElement('div');
   row.classList.add('row');
   for (let j = 0; j < Layout[i].length; j += 1) {
@@ -110,42 +115,215 @@ for (let i = 0; i < Layout.length; i++) {
   keyboard.appendChild(row);
 }
 
-function active(elem) {
-  elem.classList.add('active');
+function switchLanguage() {
+  const firstLang = keyboard.querySelectorAll(`div > .${lang}`);
+  firstLang.forEach((el, i) => {
+    firstLang[i].classList.toggle('hidden');
+    firstLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
+  });
+
+  lang === 'rus' ? lang = 'eng' : lang = 'rus';
+
+  const secondLang = keyboard.querySelectorAll(`div > .${lang}`);
+  secondLang.forEach((el, i) => {
+    secondLang[i].classList.toggle('hidden');
+    secondLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
+  });
 }
-function removeActive(elem) {
-  elem.classList.remove('active');
-}
-
-
-
 
 function upperCase() {
   const keyboardKeys = keyboard.querySelectorAll(`div > .${lang}`);
-  for (let i = 0; i < keyboardKeys.length; i++) {
+  keyboardKeys.forEach((el, i) => {
     keyboardKeys[i].querySelectorAll('span')[0].classList.toggle('hidden');
     keyboardKeys[i].querySelectorAll('span')[1].classList.toggle('hidden');
-  }
-};
- function switchLanguage()  {
-  const firstLang = keyboard.querySelectorAll(`div > .${lang}`);
+  });
+}
 
-  for (let i = 0; i < firstLang.length; i++) {
-    firstLang[i].classList.toggle('hidden');
-    firstLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
-  }
-  if (lang === 'rus') {
-    lang = 'eng';
-    localStorage.setItem('lang', lang);
-  } else {
-    lang = 'rus';
-    localStorage.setItem('lang', lang);
-  }
-  const secondLang = keyboard.querySelectorAll(`div > .${lang}`);
-  for (let i = 0; i < secondLang.length; i += 1) {
-    secondLang[i].classList.toggle('hidden');
-    secondLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
-  }
-};
+document.addEventListener('keydown', (e) => {
+  const key = keyboard.querySelectorAll(`.${e.code}`)[0];
 
+  if (e.altKey && e.ctrlKey && (e.keyCode === 18 || e.keyCode === 17)) {
+    active(key);
+    if (caps === true) {
+      switchLanguage();
+      upperCase();
+      caps = false;
+    } else {
+      switchLanguage();
+    }
+  }
+  switch (e.code) {
+    case 'Enter':
+      active(key);
+      textArea.value += '\n';
+      break;
+      case 'Tab':
+        e.preventDefault();
+        active(key);
+        textArea.value += ' ';
+        textArea.focus();
+        break;
+    case 'CapsLock':
+      if (caps) {
+        removeActive(key);
+        caps = false;
+      } else {
+        active(key);
+        caps = true;
+      }
+      upperCase();
+      break;
+    case 'Backspace':
+      active(key);
 
+      if (textArea.selectionStart !== textArea.selectionEnd) {
+        textArea.setRangeText('', textArea.selectionStart, textArea.selectionEnd);
+      } else {
+        textArea.value = textArea.value.substr(0, textArea.value.length - 1);
+      }
+
+      break;
+    case 'ShiftLeft':
+      active(key);
+      upperCase();
+      break;
+    case 'ShiftRight':
+      active(key);
+      upperCase();
+      break;
+    case 'Delete':
+
+      active(key);
+      if (textArea.selectionStart === textArea.selectionEnd) {
+        textArea.setRangeText('', textArea.selectionStart, textArea.selectionEnd);
+      }
+      break;
+    case 'ControlLeft':
+      active(key);
+
+      break;
+    case 'ControlRight':
+      active(key);
+      break;
+    case 'AltLeft':
+      active(key);
+      e.preventDefault();
+      textArea.focus();
+      break;
+    case 'AltRight':
+      active(key);
+      e.preventDefault();
+      textArea.focus();
+      break;
+    default:
+      active(key);
+      textArea.value += key.querySelectorAll(':not(.hidden)')[1].textContent;
+      break;
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  const elem = keyboard.querySelectorAll(`.${e.code}`)[0];
+  if (elem.classList.contains('ShiftLeft') || elem.classList.contains('ShiftRight')) {
+    removeActive(elem);
+    upperCase();
+  }
+  removeActive(elem);
+});
+keyboard.addEventListener('mousedown', (e) => {
+  const key = e.target.closest('.key');
+  switch (key.classList[1]) {
+    case 'Enter':
+      active(key);
+      textArea.value += '\n';
+      break;
+    case 'ShiftLeft':
+      upperCase();
+      active(key);
+      textArea.focus();
+      break;
+    case 'ShiftRight':
+      upperCase();
+      active(key);
+      textArea.focus();
+      break;
+    case 'Backspace':
+      active(key);
+      if (textArea.selectionStart !== textArea.selectionEnd) {
+        textArea.setRangeText('', textArea.selectionStart, textArea.selectionEnd);
+      } else {
+        textArea.value = textArea.value.substr(0, textArea.value.length - 1);
+      }
+      break;
+    case 'Tab':
+      active(key);
+      textArea.value += ' ';
+      textArea.focus();
+      break;
+    case 'ControlLeft':
+      active(key);
+      break;
+    case 'ControlRight':
+      active(key);
+      break;
+    case 'Delete':
+      active(key);
+      if (textArea.selectionStart === textArea.selectionEnd) {
+        textArea.setRangeText('', textArea.selectionStart, textArea.selectionEnd + 1);
+      }
+      break;
+    case 'CapsLock':
+      active(key);
+      if (caps) {
+        removeActive(key);
+        caps = false;
+      } else {
+        active(key);
+        caps = true;
+      }
+      upperCase();
+      break;
+    case 'AltLeft':
+      active(key);
+      textArea.focus();
+      break;
+    case 'AltRight':
+      active(key);
+      textArea.focus();
+      break;
+    default:
+      active(key);
+      textArea.value += key.querySelectorAll(':not(.hidden)')[1].textContent;
+      break;
+  }
+});
+
+document.addEventListener('mouseup', (e) => {
+  const elem = e.target.closest('.key');
+  switch (elem.classList[1]) {
+    case 'ShiftLeft':
+    case 'ShiftRight':
+      removeActive(elem);
+      upperCase();
+      break;
+    case 'Delete':
+      textArea.focus();
+      removeActive(elem);
+
+      break;
+    case 'CapsLock':
+      if (caps !== true) {
+        removeActive(e.target.closest('.key'));
+      } else {
+        active(e.target.closest('.key'));
+      }
+      break;
+    case 'Tab':
+      textArea.focus();
+      removeActive(elem);
+      break;
+    default:
+      removeActive(elem);
+      break;
+  }
+});
