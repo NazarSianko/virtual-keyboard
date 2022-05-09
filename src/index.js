@@ -80,6 +80,8 @@ const container = document.createElement('div');
 const textArea = document.createElement('textarea');
 const keyboard = document.createElement('div');
 const title = document.createElement('h1');
+const subTitle = document.createElement('h2');
+subTitle.innerHTML = 'Переключение языка производится при помощи клавиш Ctrl + Alt';
 title.innerHTML = 'RSS VIRTUAL KEYBOARD';
 textArea.classList.add('textArea');
 keyboard.classList.add('keyboard');
@@ -89,6 +91,7 @@ container.append(textArea);
 container.append(keyboard);
 document.body.append(container);
 container.append(title);
+container.append(subTitle);
 textArea.setAttribute('readonly', 'readonly');
 function active(elem) {
   elem.classList.add('active');
@@ -129,10 +132,8 @@ function switchLanguage() {
   });
   if (lang === 'rus') {
     lang = 'eng';
-    localStorage.setItem('lang', lang);
   } else {
     lang = 'rus';
-    localStorage.setItem('lang', lang);
   }
 
   const secondLang = keyboard.querySelectorAll(`div > .${lang}`);
@@ -140,7 +141,6 @@ function switchLanguage() {
     secondLang[i].classList.toggle('hidden');
     secondLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
   });
-
 }
 
 function upperCase() {
@@ -213,7 +213,7 @@ document.addEventListener('keydown', (e) => {
       break;
     case 'ControlLeft':
       active(key);
-
+    
       break;
     case 'ControlRight':
       active(key);
@@ -255,10 +255,8 @@ keyboard.addEventListener('mousedown', (e) => {
       active(key);
       if (lang === 'rus') {
         lang = 'eng';
-        localStorage.setItem('lang', lang);
       } else {
         lang = 'rus';
-        localStorage.setItem('lang', lang);
       }
       switchLanguage();
 
