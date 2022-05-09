@@ -58,27 +58,29 @@ const Layout = [
     ['Comma', 'б', 'Б', '.', '<'],
     ['Period', 'ю', 'Ю', ',', '>'],
     ['Slash', '.', ',', '/', '?'],
-    ['ArrowUp', '▲', '▲', '▲', '▲'],
+    ['ArrowUp', '↑', '↑', '↑', '↑'],
     ['ShiftRight', 'Shift', 'Shift', 'Shift', 'Shift'],
   ],
   [
     ['ControlLeft', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
     ['AltLeft', 'Alt', 'Alt', 'Alt', 'Alt'],
+    ['Lang', 'Lang', 'Lang', 'Lang', 'Lang'],
     ['Space', ' ', ' ', ' ', ' '],
     ['AltRight', 'Alt', 'Alt', 'Alt', 'Alt'],
-    ['ArrowLeft', '◄', '◄', '◄', '◄'],
-    ['ArrowDown', '▼', '▼', '▼', '▼'],
-    ['ArrowRight', '►', '►', '►', '►'],
+    ['ArrowLeft', '←', '←', '←', '←'],
+    ['ArrowDown', '↓', '↓', '↓', '↓'],
+    ['ArrowRight', '→', '→', '→', '→'],
     ['ControlRight', 'Ctrl', 'Ctrl', 'Ctrl', 'Ctrl'],
   ],
 ];
 let lang = 'eng';
+
 let caps = false;
 const container = document.createElement('div');
 const textArea = document.createElement('textarea');
 const keyboard = document.createElement('div');
 const title = document.createElement('h1');
-title.innerHTML = 'RSS VIRTUAL KEYBOARD'
+title.innerHTML = 'RSS VIRTUAL KEYBOARD';
 textArea.classList.add('textArea');
 keyboard.classList.add('keyboard');
 container.classList.add('container');
@@ -87,6 +89,7 @@ container.append(textArea);
 container.append(keyboard);
 document.body.append(container);
 container.append(title);
+textArea.setAttribute('readonly', 'readonly');
 function active(elem) {
   elem.classList.add('active');
 }
@@ -126,16 +129,17 @@ function switchLanguage() {
   });
   if (lang === 'rus') {
     lang = 'eng';
+    localStorage.setItem('lang', lang);
   } else {
     lang = 'rus';
+    localStorage.setItem('lang', lang);
   }
- 
+
   const secondLang = keyboard.querySelectorAll(`div > .${lang}`);
   secondLang.forEach((el, i) => {
     secondLang[i].classList.toggle('hidden');
     secondLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
   });
- 
 
 }
 
@@ -148,7 +152,6 @@ function upperCase() {
 }
 
 document.addEventListener('keydown', (e) => {
-  let i = 0; i++;console.log(i);
   const key = keyboard.querySelectorAll(`.${e.code}`)[0];
 
   if (e.altKey && e.ctrlKey && (e.keyCode === 18 || e.keyCode === 17)) {
@@ -181,6 +184,7 @@ document.addEventListener('keydown', (e) => {
         caps = true;
       }
       upperCase();
+
       break;
     case 'Backspace':
       active(key);
@@ -239,12 +243,25 @@ document.addEventListener('keyup', (e) => {
   }
   removeActive(elem);
 });
+
 keyboard.addEventListener('mousedown', (e) => {
   const key = e.target.closest('.key');
   switch (key.classList[1]) {
     case 'Enter':
       active(key);
       textArea.value += '\n';
+      break;
+    case 'Lang':
+      active(key);
+      if (lang === 'rus') {
+        lang = 'eng';
+        localStorage.setItem('lang', lang);
+      } else {
+        lang = 'rus';
+        localStorage.setItem('lang', lang);
+      }
+      switchLanguage();
+
       break;
     case 'ShiftLeft':
       upperCase();
@@ -319,6 +336,9 @@ document.addEventListener('mouseup', (e) => {
       textArea.focus();
       removeActive(elem);
 
+      break;
+    case 'Lang':
+      removeActive(elem);
       break;
     case 'CapsLock':
       if (caps !== true) {
