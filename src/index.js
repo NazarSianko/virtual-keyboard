@@ -208,7 +208,7 @@ document.addEventListener('keydown', (e) => {
 
       active(key);
       if (textArea.selectionStart === textArea.selectionEnd) {
-        textArea.setRangeText('', textArea.selectionStart, textArea.selectionEnd);
+        textArea.setRangeText('', textArea.selectionStart, textArea.selectionEnd + 1);
       }
       break;
     case 'ControlLeft':
