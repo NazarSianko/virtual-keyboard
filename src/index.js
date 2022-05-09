@@ -77,6 +77,8 @@ let caps = false;
 const container = document.createElement('div');
 const textArea = document.createElement('textarea');
 const keyboard = document.createElement('div');
+const title = document.createElement('h1');
+title.innerHTML = 'RSS VIRTUAL KEYBOARD'
 textArea.classList.add('textArea');
 keyboard.classList.add('keyboard');
 container.classList.add('container');
@@ -84,6 +86,7 @@ container.classList.add('container');
 container.append(textArea);
 container.append(keyboard);
 document.body.append(container);
+container.append(title);
 function active(elem) {
   elem.classList.add('active');
 }
@@ -121,14 +124,19 @@ function switchLanguage() {
     firstLang[i].classList.toggle('hidden');
     firstLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
   });
-
-  lang === 'rus' ? lang = 'eng' : lang = 'rus';
-
+  if (lang === 'rus') {
+    lang = 'eng';
+  } else {
+    lang = 'rus';
+  }
+ 
   const secondLang = keyboard.querySelectorAll(`div > .${lang}`);
   secondLang.forEach((el, i) => {
     secondLang[i].classList.toggle('hidden');
     secondLang[i].querySelectorAll('span')[0].classList.toggle('hidden');
   });
+ 
+
 }
 
 function upperCase() {
@@ -140,6 +148,7 @@ function upperCase() {
 }
 
 document.addEventListener('keydown', (e) => {
+  let i = 0; i++;console.log(i);
   const key = keyboard.querySelectorAll(`.${e.code}`)[0];
 
   if (e.altKey && e.ctrlKey && (e.keyCode === 18 || e.keyCode === 17)) {
@@ -157,12 +166,12 @@ document.addEventListener('keydown', (e) => {
       active(key);
       textArea.value += '\n';
       break;
-      case 'Tab':
-        e.preventDefault();
-        active(key);
-        textArea.value += ' ';
-        textArea.focus();
-        break;
+    case 'Tab':
+      e.preventDefault();
+      active(key);
+      textArea.value += ' ';
+      textArea.focus();
+      break;
     case 'CapsLock':
       if (caps) {
         removeActive(key);
