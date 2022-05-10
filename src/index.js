@@ -253,13 +253,13 @@ keyboard.addEventListener('mousedown', (e) => {
       break;
     case 'Lang':
       active(key);
-      if (lang === 'rus') {
-        lang = 'eng';
+       if (caps === true) {
+        switchLanguage();
+        upperCase();
+        caps = false;
       } else {
-        lang = 'rus';
+        switchLanguage();
       }
-      switchLanguage();
-
       break;
     case 'ShiftLeft':
       upperCase();
